@@ -29,7 +29,7 @@ def create_vocab(source, vocab_size, name):
     print("Creating vocabulary")
     flat_source = [val for sublist in source for val in sublist]
     fdist=FreqDist(flat_source)
-    most_common = fdist.most_common(vocab_size-1)
+    most_common = fdist.most_common(vocab_size-2)
     
     dest=[]
     for word, apperances in most_common:
@@ -45,14 +45,39 @@ def create_vocab(source, vocab_size, name):
     
 
 
-# In[ ]:
+# In[43]:
 
-def translate(text, model):
-    print('not implemented')
+def translate(text_file, model):
+    text_raw = open(text_file, 'r')
+    text=[]
+    for line in text_raw:
+        text.append(re.compile('\w+').findall(line))
+    text_raw.close()
+    print("Input text size:"+str(len(text)))
+    
+    text=pad_sequences(text, maxlen=model.input_shape()[2], dtype='int32', value=0)
+    
+    for sentence in text:
+        rsent = list(reversed(sentence))
+        sentence = rsent
+    
+    # load json and create model
+    json_file = open('model.json', 'r')
+    loaded_model_json = json_file.read()
+    json_file.close()
+    loaded_model = model_from_json(loaded_model_json)
+
+    # load weights into new model
+    loaded_model.load_weights("Data/model.h5")
+    print("Loaded model from disk")
+    
+    translation=loaded_model.predict(text)
+    
+    #TODO Get words from vocabulary
     
 
 
-# In[40]:
+# In[42]:
 
 #learn
 #-creates and traines LSTM neural nework of layer_cell_num layers, using X and Y datasets
@@ -134,14 +159,14 @@ def learning(X_file, Y_file, vocab, layer_cell_num):
     model.add(LSTM(layer_cell_num, activation='sigmoid', recurrent_activation='sigmoid', kernel_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), recurrent_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), return_sequences=True))
     model.add(LSTM(layer_cell_num, activation='sigmoid', recurrent_activation='sigmoid', kernel_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), recurrent_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), return_sequences=True))
     model.add(LSTM(layer_cell_num, activation='sigmoid', recurrent_activation='sigmoid', kernel_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), recurrent_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), return_sequences=True)) 
-    model.add(TimeDistributed(Dense(vocab)))
+    model.add(TimeDistributed(Dense(1)))
     print(model.summary())
 
     sgd = optimizers.SGD(lr=0.7, clipnorm=5)
     model.compile(loss='mean_squared_error', optimizer=sgd)
     
     print("Training and testing model")
-    X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y, test_size=0.33)
+    X_train, X_test, Y_train, Y_test = model_selection.train_test_split(X, Y[:, :, np.newaxis], test_size=0.33)
     
     model.fit(X_train, Y_train, epochs=7, batch_size=128)
     
