@@ -134,7 +134,6 @@ def learning(X_file, Y_file, vocab, layer_cell_num):
     model.add(LSTM(layer_cell_num, activation='sigmoid', recurrent_activation='sigmoid', kernel_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), recurrent_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), return_sequences=True))
     model.add(LSTM(layer_cell_num, activation='sigmoid', recurrent_activation='sigmoid', kernel_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), recurrent_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), return_sequences=True))
     model.add(LSTM(layer_cell_num, activation='sigmoid', recurrent_activation='sigmoid', kernel_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), recurrent_initializer=initializers.RandomUniform(minval=-0.08, maxval=0.08, seed=None), return_sequences=True)) 
-    model.add(Flatten())
     model.add(TimeDistributed(Dense(vocab)))
     print(model.summary())
 
