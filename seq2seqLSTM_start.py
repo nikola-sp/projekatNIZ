@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[78]:
+# In[3]:
 
 import numpy as np
 import sys
@@ -11,14 +11,13 @@ from seq2seqLSTM import learning
 from seq2seqLSTM import save_model
 
 
-# In[80]:
+# In[1]:
 
 parser = argparse.ArgumentParser(description='Enlish to French translator.')
 subparsers = parser.add_subparsers()
-translate = subparsers.add_parser('translate', aliases=['t'])
-translate.add_argument('text', help='English text file')
-translate.add_argument('model', help='JSON file with trained network')
-translate.set_defaults(which='translate')
+stranslate = subparsers.add_parser('translate', aliases=['t'])
+stranslate.add_argument('text', help='English text file')
+stranslate.set_defaults(which='translate')
 
 learn = subparsers.add_parser('learn', aliases=['l'])
 learn.add_argument('X', help='learning input (English)')
@@ -31,7 +30,7 @@ print("Reading input")
 args=vars(parser.parse_args())
 
 if args['which'] == 'translate':
-    translate(args['text'], args['model'])
+    translate(args['text'])
 else:
     print("Learning - train & test")
     model=learning(args['X'], args['Y'], args['vocab_size'], args['layer_cell_number'])
